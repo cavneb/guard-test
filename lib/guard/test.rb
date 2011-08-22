@@ -15,7 +15,8 @@ module Guard
       @options = {
         :all_on_start   => true,
         :all_after_pass => true,
-        :keep_failed    => true
+        :keep_failed    => true,
+        :rakes          => []
       }.update(options)
       @last_failed  = false
       @failed_paths = []
@@ -25,6 +26,14 @@ module Guard
 
     def start
       ::Guard::UI.info("Guard::Test #{TestVersion::VERSION} is running, with Test::Unit #{::Test::Unit::VERSION}!", :reset => true)
+      
+      unless @otions[:rakes].empty?
+        ::Guard::UI.info("Executing provided rake tasks", :reset => true)
+        @options[:rakes].each do |task_name|
+          system("rake #{task_name}")
+        end
+      end
+      
       run_all if @options[:all_on_start]
     end
 
